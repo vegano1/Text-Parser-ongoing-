@@ -9,6 +9,11 @@
 
 using namespace std;
 
+void log(string a) {
+	cout << a;
+
+}
+
 bool File::fileExists(const std::string& filename) {
 	struct stat buf;
 	if (stat(filename.c_str(), &buf) != -1) {
@@ -17,96 +22,88 @@ bool File::fileExists(const std::string& filename) {
 	return false;
 }
 
-int Parser::wordPos(std::string Line, std::string Word) {
+void Parser::config(std::fstream& inputDoc, std::string fieldName) {
+	string word;
+	if (inputDoc.is_open()) {
+		string word;
 
-	std::size_t found = Line.find(Word);
-	if (found != std::string::npos) {
+		int fieldNum = 0;
+		while (getline(inputDoc, word)) {
 
-	}
-	return found;
-}
+			if (word.find("#Fields:") == 0) {
+				int fieldPos = word.find(fieldName);
 
-int config(fstream& document, std::string fieldName) {
+				for (int i = 0; i <= fieldPos; i++) {
 
-	Parser Parse;
-	string a;
-int FieldNum = 1;
-	while (document >> a) {
-		if (Parse.word != "#Fields:") {
-
-			Parse.word = "";
-		} else {
-			getline(document, a);
-			int FieldPos = Parse.wordPos(Parse.Line, fieldName);
-
-			for (int p = 0; p < FieldPos; p++) {
-
-				if (Parse.Line[p] == ' ') {
-					FieldNum++;
-
+					if (word[i] == ' ') {
+						fieldNum++;
+					}
 				}
-			}
-			if(FieldNum>1)
-			{
-				return 1;
-			}
-			else{
-				return 0;
+
+				setFieldNum(fieldNum);
+
+				break;
 			}
 		}
+	} else {
+		cout << "inputDoc is not opened. ";
 	}
+
 }
 
 string Parser::readColumn(std::string filename, std::string fieldName) {
 
-	int currentField = 1;
-
-	Parser Parse;
 	File d;
-
-	char* fileName = (char*) filename.c_str();
 
 	if (d.fileExists(filename)) {
 
+		fstream inputDoc;
+
+		char* fileName = (char*) filename.c_str();
 		printf("Opening File. \n");
+		inputDoc.open(fileName);
 
-		document.open(fileName);
-		Parse.config(document,fieldName);
-				while (getline(document, Parse.Line)) {
+		config(inputDoc, fieldName);
+		int FieldNum = getFieldNum();
+		if(FieldNum == 0)
+		{
+			cout << "Field Not Found." << endl;
+			return "0";
+		}
 
-					for (int i = 0; i < Parse.Line.length(); i++) {
+		string Line;
+		while (getline(inputDoc, Line)) {
 
-						if (FieldNum == 1) {
-							string test1 = Parse.Line.substr(i);
+			if (FieldNum == 1) {
+				int test2 = Line.find(" ");
+				cout << Line.substr(0, test2) << endl;
+			}
 
+			else {
+
+				int currentField = 1;
+
+				for (int i = 0; i < Line.length(); i++) {
+
+					if (Line[i] == ' ') {
+
+						currentField++;
+
+						if (currentField == FieldNum) {
+
+							string test1 = Line.substr(i + 1);
 							int test2 = test1.find(" ");
-							cout << Parse.Line.substr(i, test2) << endl;
-							i = Parse.Line.length();
-						}
+							cout << Line.substr(i + 1, test2) << endl;
 
-						if (Parse.Line[i] == ' ') {
+							i = Line.length();
 
-							if (currentField == FieldNum - 1) {
-
-								string test1 = Parse.Line.substr(i + 1);
-
-								int test2 = test1.find(" ");
-								cout << Parse.Line.substr(i + 1, test2) << endl;
-
-								i = Parse.Line.length();
-								currentField = 0;
-							}
-							currentField++;
 						}
 					}
-
 				}
+			}
+		}
 
-
-
-
-
-		document.close();
+		inputDoc.close();
 	}
 
 	else {
