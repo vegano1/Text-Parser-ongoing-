@@ -7,8 +7,6 @@
 #include <sys/stat.h>
 
 
-using namespace std;
-
 #ifndef PARSER_H
 #define PARSER_H
 
@@ -27,17 +25,20 @@ public :
 class Parser
 {
 
-
+	int FieldNum;
 public :
-	string Line;
-	string word;
-	int FieldNum = 0;
-	fstream document;
 
-	string readColumn(std::string filename, std::string fieldName);
-	int wordPos(std::string Line, std::string Word);
-	int config(fstream& stream, std::string fieldName);
 
+
+	std::string Line;
+	std::string word;
+
+	std::string readColumn(std::string filename, std::string fieldName);
+
+	void config(std::fstream& document, std::string fieldName);
+
+	void setFieldNum( int num){ FieldNum = num;}
+	int getFieldNum(){ return FieldNum; }
 };
 
 
