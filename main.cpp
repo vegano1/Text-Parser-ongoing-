@@ -1,5 +1,5 @@
 //============================================================================
-// Name        : test.cpp
+// Name        : main.cpp
 
 // Author      : Brayan Almonte
 // Version     : 1.0
